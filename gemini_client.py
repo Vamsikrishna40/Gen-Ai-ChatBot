@@ -1,29 +1,48 @@
-
 import os
 import logging
+from pathlib import Path
+
+import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
+
 from prompts import CAREER_ADVISOR_PROMPT
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+ENV_PATH = BASE_DIR / ".env"
+
+load_dotenv(dotenv_path=ENV_PATH)
 
 logging.basicConfig(
-    filename="chatbot_errors.log",
+    filename=BASE_DIR / "chatbot_errors.log",
     level=logging.ERROR,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 class GeminiCareerChatbot:
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = None
+
+        # For Streamlit Cloud deployment
+        try:
+            api_key = st.secrets.get("GEMINI_API_KEY")
+        except Exception:
+            api_key = None
+
+        # For local system using .env
+        if not api_key:
+            api_key = os.getenv("GEMINI_API_KEY")
 
         if not api_key:
-            raise ValueError("GEMINI_API_KEY not found. Please add it to your .env file.")
+            raise ValueError(
+                "GEMINI_API_KEY not found. Add it in Streamlit Cloud Secrets or local .env file."
+            )
 
         genai.configure(api_key=api_key)
 
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash-lite",
+            model_name="gemini-2.0-flash",
             system_instruction=CAREER_ADVISOR_PROMPT
         )
 
@@ -38,8 +57,8 @@ class GeminiCareerChatbot:
 
             if response and response.text:
                 return response.text
-            else:
-                return "I could not generate a response. Please try again."
+
+            return "I could not generate a response. Please try again."
 
         except Exception as e:
             logging.error(f"Gemini API Error: {str(e)}")
