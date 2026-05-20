@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from prompts import CAREER_ADVISOR_PROMPT
 
+
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 
@@ -24,13 +25,13 @@ class GeminiCareerChatbot:
     def __init__(self):
         api_key = None
 
-        # For Streamlit Cloud deployment
+        # First try Streamlit Cloud secrets
         try:
             api_key = st.secrets.get("GEMINI_API_KEY")
         except Exception:
             api_key = None
 
-        # For local system using .env
+        # Then try local .env file
         if not api_key:
             api_key = os.getenv("GEMINI_API_KEY")
 
@@ -60,6 +61,6 @@ class GeminiCareerChatbot:
 
             return "I could not generate a response. Please try again."
 
-       except Exception as e:
-    logging.error(f"Gemini API Error: {str(e)}")
-    return f"Error: {str(e)}"
+        except Exception as e:
+            logging.error(f"Gemini API Error: {str(e)}")
+            return f"Error: {str(e)}"
