@@ -60,6 +60,6 @@ class GeminiCareerChatbot:
 
             return "I could not generate a response. Please try again."
 
-        except Exception as e:
-            logging.error(f"Gemini API Error: {str(e)}")
-            return "Sorry, something went wrong while contacting the AI model. Please try again later."
+       except Exception as e:
+    logging.error(f"Gemini API Error: {str(e)}")
+    return f"Error: {str(e)}"
