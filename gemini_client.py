@@ -63,4 +63,4 @@ class GeminiCareerChatbot:
 
         except Exception as e:
             logging.error(f"Gemini API Error: {str(e)}")
-            return f"Error: {str(e)}"
+            return "Sorry, something went wrong while contacting the AI model. Please try again later."
